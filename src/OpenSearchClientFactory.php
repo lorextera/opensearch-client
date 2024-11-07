@@ -20,7 +20,6 @@ use Monolog\Logger;
 use OpenSearch\Client;
 use OpenSearch\ClientBuilder;
 use Pimcore\Bundle\OpenSearchClientBundle\LogHandler\Filter404Handler;
-use Pimcore\Version;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -33,14 +32,11 @@ final class OpenSearchClientFactory
         $clientBuilder = new ClientBuilder();
         $clientBuilder->setHosts($config['hosts']);
 
-        // TODO remove if when remove support for Pimcore 10
-        if (Version::getMajorVersion() >= 11) {
-            if (!$config['log_404_errors'] && $logger instanceof Logger) {
-                $logger->pushHandler(new Filter404Handler());
-            }
-
-            $clientBuilder->setLogger($logger);
+        if (!$config['log_404_errors'] && $logger instanceof Logger) {
+            $logger->pushHandler(new Filter404Handler());
         }
+
+        $clientBuilder->setLogger($logger);
 
         if (isset($config['username'], $config['password'])) {
             $clientBuilder->setBasicAuthentication($config['username'], $config['password']);
